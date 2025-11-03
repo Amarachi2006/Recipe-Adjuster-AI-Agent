@@ -6,7 +6,7 @@ from models_a2a import TaskResult, TaskStatus, Artifact, MessagePart, A2AMessage
 from adjuster import adjust_recipe, parse_ingredients_text
 from schema import RecipeInput, RecipeParseRequest
 from daily_tips import get_daily_tip
-
+import json
 
 class RecipeAgent:
 
