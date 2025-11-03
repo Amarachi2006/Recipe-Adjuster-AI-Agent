@@ -20,16 +20,50 @@ class RecipeAgent:
         Processes a single user message and returns a complete, final task result.
         """
         task_id = message.taskId or str(uuid4())
-
         data_payload = None
+        
+        text_payload = None
         for part in message.parts:
-            if part.kind == "data":
-                data_payload = part.data
+            if part.kind == "text":
+                text_payload = part.text.strip()
                 break
+        
+        if text_payload:
+            # This is a message from a user in a chat
+            text_lower = text_payload.lower()
+
+            # --- Task 1: Check for "tip" command ---
+            if text_lower in ["tip", "get daily tip", "daily tip"]:
+                data_payload = {"task": "get_daily_tip"}
+            
+            # --- Task 2: Check for "parse" command ---
+            elif text_lower.startswith("parse "):
+                ingredient_string = text_payload[6:].strip()
+                data_payload = {
+                    "ingredient_text": ingredient_string,
+                    "servings": 1 
+                }
+                
+            # --- Task 3: Check if it's JSON for "adjust" task ---
+            else:
+                try:
+                    data_payload = json.loads(text_payload)
+                except json.JSONDecodeError:
+                    return self._build_error_task(task_id, 
+                        "Sorry, I didn't understand. Please try:\n" +
+                        "- `tip` (for a daily tip)\n" +
+                        "- `parse 2 cups of flour` (to parse ingredients)\n" +
+                        "- (Or paste the full JSON for adjusting a recipe)")
+        
+        else:
+            for part in message.parts:
+                if part.kind == "data":
+                    data_payload = part.data
+                    break
 
         if not data_payload:
-            return self._build_error_task(task_id, "No 'data' part found in message. Please provide a data payload.")
-
+            return self._build_error_task(task_id, "No 'data' or valid 'text' part found in message.")
+        
         try:
             # --- Task 1: Check for 'get_daily_tip' ---
             if data_payload.get("task") == "get_daily_tip":
