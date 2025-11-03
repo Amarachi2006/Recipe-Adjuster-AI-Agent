@@ -51,7 +51,7 @@ async def a2a_endpoint(request: Request):
         
         return {
             "jsonrpc": "2.0",
-            "id": rpc.request.id,
+            "id": rpc_request.id,
             "result": result.model_dump(exclude_none=True)
         }
 
