@@ -42,7 +42,6 @@ async def a2a_endpoint(request: Request):
         
         rpc_request = JSONRPCRequest(**body)
         
-        
         if rpc_request.method != "message/send":
             pass
 
@@ -50,13 +49,15 @@ async def a2a_endpoint(request: Request):
             message=rpc_request.params.message
         )
         
-        response = JSONRPCResponse(
-            id=rpc_request.id,
-            result=result
-        )
-        return response.model_dump(exclude_none=True)
+        return {
+            "jsonrpc": "2.0",
+            "id": rpc.request.id,
+            "result": result.model_dump(exclude_none=True)
+        }
 
     except Exception as e:
+        import traceback
+        print("A2A ERROR:", traceback.format_exc())
         return JSONResponse(
             status_code=500,
             content={
@@ -65,6 +66,7 @@ async def a2a_endpoint(request: Request):
                 "error": {"code": -32603, "message": "Internal error", "data": {"details": str(e)}}
             }
         )
+
 
 @app.post("/adjust")
 def adjust_endpoint(recipe: RecipeInput):
