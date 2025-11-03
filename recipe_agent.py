@@ -1,5 +1,3 @@
-# agents/recipe_agent.py
-
 from uuid import uuid4
 from pydantic import ValidationError
 import traceback  
@@ -32,7 +30,7 @@ class RecipeAgent:
             # This is a message from a user in a chat
             text_lower = text_payload.lower()
             
-            # --- Task 1: Check for Greetings (NEW!) ---
+            # --- Task 1: Check for Greetings  ---
             if text_lower in ["hi", "hello", "help", "info", "start"]:
                 response_text = (
                     "Hello! I'm the Recipe Adjuster Agent. Here's what I can do:\n\n"
@@ -43,7 +41,7 @@ class RecipeAgent:
                 return self._build_completed_task(
                     task_id=task_id,
                     response_text=response_text,
-                    artifacts=[] # No artifacts needed for a greeting
+                    artifacts=[] 
                 )
 
             # --- Task 2: Check for "tip" command ---
