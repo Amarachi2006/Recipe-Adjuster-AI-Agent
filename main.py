@@ -79,20 +79,6 @@ def parse_endpoint(request: RecipeParseRequest):
     parsed = parse_ingredients_text(ingredient_text, servings)
     return {"parsed_ingredients": parsed}
 
-@app.post("/webhook")
-async def webhook(request: Request):
-    data = await request.json()
-    event = data.get("event", "")
-    
-    if event == "clock.daily":
-        return {"response": get_daily_tip()}
-    elif event == "message.new":
-        text = data.get("text", "").lower()
-        if "adjust recipe" in text:
-            return {"response": "To adjust a recipe, please provide the recipe details including title, original servings, target servings, ingredients, and instructions."}
-        else:
-            return {"response": "I'm here to help you adjust recipes! Just let me know what you need."}
-
 if __name__ == "__main__":
     import uvicorn
     import os
