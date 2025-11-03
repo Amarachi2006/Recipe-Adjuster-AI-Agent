@@ -80,7 +80,7 @@ class RecipeAgent:
             # --- Task 1: Check for 'get_daily_tip' ---
             if data_payload.get("task") == "get_daily_tip":
                 tip = get_daily_tip()
-                response_text = "Here's your daily cooking tip!"
+                response_text = f"Here's your daily cooking tip:\n\n**{tip}**"
                 return self._build_completed_task(
                     task_id=task_id,
                     response_text=response_text,
@@ -91,7 +91,8 @@ class RecipeAgent:
             try:
                 recipe_input = RecipeInput(**data_payload)
                 result_data = adjust_recipe(recipe_input.model_dump())
-                response_text = f"Recipe '{recipe_input.title}' adjusted for {recipe_input.target_servings} servings."
+                result_json_string = json.dumps(result_data, indent=2)
+                response_text = f"Recipe '{recipe_input.title}' adjusted for {recipe_input.target_servings} servings:\n\n```json\n{result_json_string}\n```"
                 return self._build_completed_task(
                     task_id=task_id,
                     response_text=response_text,
@@ -104,7 +105,8 @@ class RecipeAgent:
             try:
                 parse_request = RecipeParseRequest(**data_payload)
                 result_data = parse_ingredients_text(parse_request.ingredient_text, parse_request.servings)
-                response_text = f"Successfully parsed ingredients for {parse_request.servings} servings."
+                result_json_string = json.dumps(result_data, indent=2)
+                response_text = f"Successfully parsed ingredients for {parse_request.servings} servings:\n\n```json\n{result_json_string}\n```"
                 return self._build_completed_task(
                     task_id=task_id,
                     response_text=response_text,
