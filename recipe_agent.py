@@ -31,12 +31,26 @@ class RecipeAgent:
         if text_payload:
             # This is a message from a user in a chat
             text_lower = text_payload.lower()
+            
+            # --- Task 1: Check for Greetings (NEW!) ---
+            if text_lower in ["hi", "hello", "help", "info", "start"]:
+                response_text = (
+                    "Hello! I'm the Recipe Adjuster Agent. Here's what I can do:\n\n"
+                    "1.  **Get a tip:** Just type `tip`\n"
+                    "2.  **Parse ingredients:** Type `parse 2 cups flour and 1 egg`\n"
+                    "3.  **Adjust a full recipe:** Paste the recipe's full JSON data."
+                )
+                return self._build_completed_task(
+                    task_id=task_id,
+                    response_text=response_text,
+                    artifacts=[] # No artifacts needed for a greeting
+                )
 
-            # --- Task 1: Check for "tip" command ---
+            # --- Task 2: Check for "tip" command ---
             if text_lower in ["tip", "get daily tip", "daily tip"]:
                 data_payload = {"task": "get_daily_tip"}
             
-            # --- Task 2: Check for "parse" command ---
+            # --- Task 3: Check for "parse" command ---
             elif text_lower.startswith("parse "):
                 ingredient_string = text_payload[6:].strip()
                 data_payload = {
@@ -44,7 +58,7 @@ class RecipeAgent:
                     "servings": 1 
                 }
                 
-            # --- Task 3: Check if it's JSON for "adjust" task ---
+            # --- Task 4: Check if it's JSON for "adjust" task ---
             else:
                 try:
                     data_payload = json.loads(text_payload)
